@@ -1,9 +1,20 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { BarChart3, User, Calendar } from "lucide-react";
+import { BarChart3, User, Calendar, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SurveyCardProps {
   id: string;
@@ -13,6 +24,7 @@ interface SurveyCardProps {
   createdAt: string;
   responseCount?: number;
   isOwner?: boolean;
+  onDelete?: (id: string) => void;
 }
 
 export const SurveyCard = ({
@@ -23,6 +35,7 @@ export const SurveyCard = ({
   createdAt,
   responseCount = 0,
   isOwner = false,
+  onDelete,
 }: SurveyCardProps) => {
   return (
     <Card className="hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
@@ -56,12 +69,38 @@ export const SurveyCard = ({
             <Link to={`/survey/${id}`}>Пройти опрос</Link>
           </Button>
           {isOwner && (
-            <Button variant="outline" asChild>
-              <Link to={`/results/${id}`}>
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Результаты
-              </Link>
-            </Button>
+            <>
+              <Button variant="outline" asChild>
+                <Link to={`/results/${id}`}>
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Результаты
+                </Link>
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Удалить опрос?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Это действие нельзя отменить. Опрос и все его ответы будут удалены навсегда.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => onDelete?.(id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Удалить
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
         </div>
       </CardContent>
