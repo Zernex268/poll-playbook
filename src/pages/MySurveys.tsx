@@ -81,6 +81,23 @@ const MySurveys = () => {
     }
   };
 
+  const handleDeleteSurvey = async (surveyId: string) => {
+    try {
+      const { error } = await supabase
+        .from("surveys")
+        .delete()
+        .eq("id", surveyId);
+
+      if (error) throw error;
+
+      setSurveys(surveys.filter((s) => s.id !== surveyId));
+      toast.success("Опрос успешно удален");
+    } catch (error) {
+      console.error("Error deleting survey:", error);
+      toast.error("Ошибка при удалении опроса");
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -131,6 +148,7 @@ const MySurveys = () => {
                   createdAt={survey.created_at}
                   responseCount={survey.responseCount}
                   isOwner={true}
+                  onDelete={handleDeleteSurvey}
                 />
               ))}
             </div>
